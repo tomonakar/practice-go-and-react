@@ -1,32 +1,58 @@
-import React, { Component, Fragment } from "react";
-import { Link } from 'react-router-dom'
+import React, { Component, Fragment } from "react"
+import { Link } from "react-router-dom"
 
 export default class Movies extends Component {
-  state = { movies: [] };
+  state = {
+    movies: [],
+    isLoaded: false,
+    error: null,
+  }
 
-  componentDidMount() {
-      this.setState({
-          movies: [
-              {id: 1, title: "The Shawshank Redemption", runtime: 142 },
-              {id: 2, title: "The Godfather", runtime: 175 },
-              {id: 3, title: "The Dark Knight", runtime: 153 },
-          ]
-      })
+  async componentDidMount() {
+    try {
+      const resp = await fetch("http://localhost:4000/v1/movies")
+
+      if (resp.status !== 200) {
+        this.setState({
+          error: `Invalid response code: ${resp.status}`,
+          isLoaded: true,
+        })
+        return
+      }
+
+      const data = await resp.json()
+      console.log({ data })
+      this.setState({ movies: data.movies, isLoaded: true })
+    } catch (error) {
+      console.log({ error })
+      this.setState({ error: error.message, isLoaded: true })
+    }
   }
 
   render() {
+    const { movies, isLoaded, error } = this.state
+
+    console.log({ movies })
+
+    if (error) {
+      return <p>{error}</p>
+    }
+
+    if (!isLoaded) {
+      return <p>Loading...</p>
+    }
     return (
       <Fragment>
         <h2>Choose a movie</h2>
 
         <ul>
-            {this.state.movies.map( (m) => (
-                <li key={m.id}>
-                    <Link to={`/movies/${m.id}`}>{m.title}</Link>
-                </li>
-            ))}
+          {movies.map((m, idx) => (
+            <li key={idx}>
+              <Link to={`/movies/${m.id}`}>{m.title}</Link>
+            </li>
+          ))}
         </ul>
       </Fragment>
-    );
+    )
   }
 }
