@@ -32,9 +32,9 @@ type Movie struct {
 	MovieGenre  map[int]string `json:"genres"`
 }
 
-// Genre is tye type for genre
+// Genre is the type for genre
 type Genre struct {
-	ID        int       `json:"id"`
+	ID        int       `json:"-"`
 	GenreName string    `json:"genre_name"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
@@ -42,9 +42,9 @@ type Genre struct {
 
 // MovieGenre is the type for movie genre
 type MovieGenre struct {
-	ID        int       `json:"id"`
-	MovieID   int       `json:"movie_id"`
-	GenreID   int       `json:"genre_id"`
+	ID        int       `json:"-"`
+	MovieID   int       `json:"-"`
+	GenreID   int       `json:"-"`
 	Genre     Genre     `json:"genre"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
