@@ -12,6 +12,11 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+type jsonResp struct {
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
+}
+
 func (app *application) getOneMovie(w http.ResponseWriter, r *http.Request) {
 	params := httprouter.ParamsFromContext(r.Context())
 	id, err := strconv.Atoi(params.ByName("id"))
@@ -73,7 +78,16 @@ func (app *application) getAllMoviesByGenre(w http.ResponseWriter, r *http.Reque
 	}
 
 	movies, err := app.models.DB.All(genereID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
 	err = app.writeJSON(w, http.StatusOK, movies, "movies")
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 }
 
 func (app *application) deleteMovie(w http.ResponseWriter, r *http.Request) {}
@@ -100,9 +114,6 @@ func (app *application) editmovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(payload.Title)
-	log.Println(payload.ReleaseDate)
-
 	var movie models.Movie
 
 	movie.ID, _ = strconv.Atoi(payload.ID)
@@ -116,10 +127,13 @@ func (app *application) editmovie(w http.ResponseWriter, r *http.Request) {
 	movie.CreatedAt = time.Now()
 	movie.UpdatedAt = time.Now()
 
-	log.Println(movie.Year)
+	if movie.ID == 0 {
 
-	type jsonResp struct {
-		OK bool `json: "ok"`
+		err = app.models.DB.InsertMovie(movie)
+		if err != nil {
+			app.errorJSON(w, err)
+			return
+		}
 	}
 
 	ok := jsonResp{

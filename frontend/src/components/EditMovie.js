@@ -1,12 +1,12 @@
-import React, { Component, Fragment } from "react";
-import "./EditMovie.css";
-import Input from "./form-components/Input";
-import TextArea from "./form-components/TextArea";
-import Select from "./form-components/Select";
+import React, { Component, Fragment } from "react"
+import "./EditMovie.css"
+import Input from "./form-components/Input"
+import TextArea from "./form-components/TextArea"
+import Select from "./form-components/Select"
 
 export default class EditMovie extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       movie: {
         id: 0,
@@ -27,72 +27,72 @@ export default class EditMovie extends Component {
       isLoaded: false,
       error: null,
       errors: [],
-    };
+    }
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   handleSubmit = (evt) => {
-    evt.preventDefault();
+    evt.preventDefault()
 
     // client side validation
-    let errors = [];
+    let errors = []
     if (this.state.movie.title === "") {
-      errors.push("title");
+      errors.push("title")
     }
 
-    this.setState({errors: errors});
+    this.setState({ errors: errors })
 
     if (errors.length > 0) {
-      return false;
+      return false
     }
 
-    const data = new FormData(evt.target);
-    const payload = Object.fromEntries(data.entries());
-    console.log(payload);
+    const data = new FormData(evt.target)
+    const payload = Object.fromEntries(data.entries())
+    console.log(payload)
 
     const requestOptions = {
-      method: 'POST',
-      body : JSON.stringify(payload)
+      method: "POST",
+      body: JSON.stringify(payload),
     }
 
-    fetch('http://localhost:4000/v1/admin/editmovie', requestOptions)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
+    fetch("http://localhost:4000/v1/admin/editmovie", requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
       })
-  };
+  }
 
   handleChange = (evt) => {
-    let value = evt.target.value;
-    let name = evt.target.name;
+    let value = evt.target.value
+    let name = evt.target.name
     this.setState((prevState) => ({
       movie: {
         ...prevState.movie,
         [name]: value,
       },
-    }));
-  };
+    }))
+  }
 
   hasError(key) {
-    return this.state.errors.indexOf(key) !== -1;
+    return this.state.errors.indexOf(key) !== -1
   }
 
   componentDidMount() {
-    const id = this.props.match.params.id;
+    const id = this.props.match.params.id
     if (id > 0) {
       fetch("http://localhost:4000/v1/movie/" + id)
         .then((response) => {
           if (response.status !== "200") {
-            let err = Error;
-            err.Message = "Invalid response code: " + response.status;
-            this.setState({ error: err });
+            let err = Error
+            err.Message = "Invalid response code: " + response.status
+            this.setState({ error: err })
           }
-          return response.json();
+          return response.json()
         })
         .then((json) => {
-          const releaseDate = new Date(json.movie.release_date);
+          const releaseDate = new Date(json.movie.release_date)
 
           this.setState(
             {
@@ -111,22 +111,22 @@ export default class EditMovie extends Component {
               this.setState({
                 isLoaded: true,
                 error,
-              });
-            }
-          );
-        });
+              })
+            },
+          )
+        })
     } else {
-      this.setState({ isLoaded: true });
+      this.setState({ isLoaded: true })
     }
   }
 
   render() {
-    let { movie, isLoaded, error } = this.state;
+    let { movie, isLoaded, error } = this.state
 
     if (error) {
-      return <div>Error: {error.message}</div>;
+      return <div>Error: {error.message}</div>
     } else if (!isLoaded) {
-      return <p>Loading...</p>;
+      return <p>Loading...</p>
     } else {
       return (
         <Fragment>
@@ -202,7 +202,7 @@ export default class EditMovie extends Component {
             <pre>{JSON.stringify(this.state, null, 3)}</pre>
           </div>
         </Fragment>
-      );
+      )
     }
   }
 }
