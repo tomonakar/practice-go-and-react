@@ -17,26 +17,27 @@ func (app *application) enableCORS(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
 		next.ServeHTTP(w, r)
 	})
-
 }
 
 func (app *application) checkToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Very", "authorization")
+		w.Header().Add("Vary", "Authorization")
 
 		authHeader := r.Header.Get("Authorization")
 
 		if authHeader == "" {
-			// could set an anonymous user here
+			// could set an anonymous user
 		}
 
 		headerParts := strings.Split(authHeader, " ")
 		if len(headerParts) != 2 {
-			app.errorJSON(w, errors.New("Invalid authorization header"))
+			app.errorJSON(w, errors.New("invalid auth header"))
+			return
 		}
 
 		if headerParts[0] != "Bearer" {
 			app.errorJSON(w, errors.New("unauthorized - no bearer"))
+			return
 		}
 
 		token := headerParts[1]
@@ -44,9 +45,10 @@ func (app *application) checkToken(next http.Handler) http.Handler {
 		claims, err := jwt.HMACCheck([]byte(token), []byte(app.config.jwt.secret))
 		if err != nil {
 			app.errorJSON(w, errors.New("unauthorized - failed hmac check"))
+			return
 		}
 
-		if claims.Valid(time.Now()) {
+		if !claims.Valid(time.Now()) {
 			app.errorJSON(w, errors.New("unauthorized - token expired"))
 			return
 		}
@@ -67,8 +69,8 @@ func (app *application) checkToken(next http.Handler) http.Handler {
 			return
 		}
 
-		log.Println("userID:", userID)
+		log.Println("Valid user:", userID)
+
 		next.ServeHTTP(w, r)
 	})
-
 }
