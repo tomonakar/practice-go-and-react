@@ -83,7 +83,6 @@ export default class App extends Component {
                     </Fragment>
                   )}
                 </ul>
-                <pre>{JSON.stringify(this.state, null, 3)}</pre>
               </nav>
             </div>
 
@@ -123,9 +122,6 @@ export default class App extends Component {
                   )}
                 />
 
-                {/* <Route path="/admin">
-                  <Admin />
-                </Route> */}
                 <Route path="/">
                   <Home />
                 </Route>
