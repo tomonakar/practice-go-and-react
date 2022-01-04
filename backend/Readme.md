@@ -2,6 +2,7 @@
 - [pq](https://github.com/lib/pq)
 - [jwt](https://github.com/pascaldekloe/jwt)
 - [Alice](https://github.com/justinas/alice)
+- [graphql-go](https://github.com/graphql-go/graphql)
 
 ---
 - [ダミーのsecret作成](https://go.dev/play/p/s8KlqJIOWej)
