@@ -2,3 +2,6 @@
 - [pq](https://github.com/lib/pq)
 - [jwt](https://github.com/pascaldekloe/jwt)
 
+- [ダミーのsecret作成](https://go.dev/play/p/s8KlqJIOWej)
+- [ダミー暗号化済パスワード作成](https://go.dev/play/p/uKMMCzJWGsW)
+
