@@ -90,7 +90,26 @@ func (app *application) getAllMoviesByGenre(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-func (app *application) deleteMovie(w http.ResponseWriter, r *http.Request) {}
+func (app *application) deleteMovie(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	err = app.models.DB.DeleteMovie(id)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	ok := jsonResp{OK: true}
+
+	app.writeJSON(w, http.StatusOK, ok, "response")
+}
+
 func (app *application) insertMovie(w http.ResponseWriter, r *http.Request) {}
 
 type MoviePayload struct {
@@ -104,7 +123,7 @@ type MoviePayload struct {
 	MPAARating  string `json:"mpaa_rating"`
 }
 
-func (app *application) editmovie(w http.ResponseWriter, r *http.Request) {
+func (app *application) editMovie(w http.ResponseWriter, r *http.Request) {
 	var payload MoviePayload
 
 	err := json.NewDecoder(r.Body).Decode(&payload)
