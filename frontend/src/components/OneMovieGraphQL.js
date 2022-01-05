@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment } from "react"
 
 export default class OneMovieGraphQL extends Component {
-  state = { movie: {}, isLoaded: false, error: null };
+  state = { movie: {}, isLoaded: false, error: null }
 
   componentDidMount() {
     const payload = `
@@ -15,18 +15,19 @@ export default class OneMovieGraphQL extends Component {
             release_date
             rating
             mpaa_rating
+            poster
         }
     }
-    `;
+    `
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+    const myHeaders = new Headers()
+    myHeaders.append("Content-Type", "application/json")
 
     const requestOptions = {
       method: "POST",
       body: payload,
       headers: myHeaders,
-    };
+    }
 
     fetch("http://localhost:4000/v1/graphql", requestOptions)
       .then((response) => response.json())
@@ -34,22 +35,22 @@ export default class OneMovieGraphQL extends Component {
         this.setState({
           movie: data.data.movie,
           isLoaded: true,
-        });
-      });
+        })
+      })
   }
 
   render() {
-    const { movie, isLoaded, error } = this.state;
+    const { movie, isLoaded, error } = this.state
     if (movie.genres) {
-      movie.genres = Object.values(movie.genres);
+      movie.genres = Object.values(movie.genres)
     } else {
-      movie.genres = [];
+      movie.genres = []
     }
 
     if (error) {
-      return <div>Error: {error.message}</div>;
+      return <div>Error: {error.message}</div>
     } else if (!isLoaded) {
-      return <p>Loading...</p>;
+      return <p>Loading...</p>
     } else {
       return (
         <Fragment>
@@ -57,9 +58,19 @@ export default class OneMovieGraphQL extends Component {
             Movie: {movie.title} ({movie.year})
           </h2>
 
+          {movie.poster !== "" && (
+            <div>
+              <img
+                src={`https://image.tmdb.org/t/p/w200${movie.poster}`}
+                alt="poster"
+              />
+            </div>
+          )}
+
           <div className="float-start">
             <small>Rating: {movie.mpaa_rating}</small>
           </div>
+
           <div className="float-end">
             {movie.genres.map((m, index) => (
               <span className="badge bg-secondary me-1" key={index}>
@@ -95,7 +106,7 @@ export default class OneMovieGraphQL extends Component {
             </tbody>
           </table>
         </Fragment>
-      );
+      )
     }
   }
 }

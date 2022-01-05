@@ -130,6 +130,7 @@ func (app *application) moviesGraphQL(w http.ResponseWriter, r *http.Request) {
 	resp := graphql.Do(params)
 	if len(resp.Errors) > 0 {
 		app.errorJSON(w, errors.New(fmt.Sprintf("failed: %+v", resp.Errors)))
+		return
 	}
 
 	j, _ := json.MarshalIndent(resp, "", "  ")
